@@ -26,33 +26,35 @@ func assertOutput(t *testing.T, output string, expected string) {
 
 func TestHandler_NoParameters(t *testing.T) {
 
-	buf := new(bytes.Buffer)
-	this := &Handler{Writer: buf, Calc: calc.Addition{}}
-	err := this.Handle([]string{"1"})
+	handler := NewHandler(nil, nil)
+	err := handler.Handle(nil)
+	//buf := new(bytes.Buffer)
+	//handler := NewHandler(buf, calc.Addition{})
+	//err := handler.Handle(nil)
+	//this := &Handler{writer: buf, calc: }
+	//err := this.Handle([]string{"1"})
 	assertError(t, err, insufficientArgs)
 }
 
 func TestHandler_OperandOneBad(t *testing.T) {
 
-	buf := new(bytes.Buffer)
-	this := &Handler{Writer: buf, Calc: calc.Addition{}}
-	err := this.Handle([]string{"a", "2"})
+	handler := NewHandler(new(bytes.Buffer), &calc.Addition{})
+	err := handler.Handle([]string{"a", "2"})
 	assertError(t, err, invalidArg)
 }
 
 func TestHandler_OperandTwoBad(t *testing.T) {
 
-	buf := new(bytes.Buffer)
-	this := &Handler{Writer: buf, Calc: calc.Addition{}}
-	err := this.Handle([]string{"7", "z"})
+	handler := NewHandler(new(bytes.Buffer), &calc.Addition{})
+	err := handler.Handle([]string{"7", "z"})
 	assertError(t, err, invalidArg)
 }
 
 func TestHandler_Success(t *testing.T) {
 
 	buf := new(bytes.Buffer)
-	this := &Handler{Writer: buf, Calc: calc.Addition{}}
-	_ = this.Handle([]string{"7", "3"})
+	handler := NewHandler(buf, &calc.Addition{})
+	_ = handler.Handle([]string{"7", "3"})
 	assertOutput(t, buf.String(), "10")
 }
 
@@ -60,8 +62,8 @@ func TestHandler_BadOutput(t *testing.T) {
 
 	myError := errors.New("splat")
 	output := &WriterError{err: myError}
-	this := &Handler{Writer: output, Calc: calc.Addition{}}
-	err := this.Handle([]string{"7", "5"})
+	handler := NewHandler(output, &calc.Addition{})
+	err := handler.Handle([]string{"7", "5"})
 	assertError(t, err, myError)
 }
 

@@ -10,8 +10,15 @@ import (
 )
 
 type Handler struct {
-	Writer io.Writer
-	Calc   calc.Addition
+	writer io.Writer
+	calc   *calc.Addition
+}
+
+func NewHandler(stdout io.Writer, calculator *calc.Addition) *Handler {
+	return &Handler{
+		writer: stdout,
+		calc:   calculator,
+	}
 }
 
 func (this *Handler) Handle(args []string) error {
@@ -30,8 +37,8 @@ func (this *Handler) Handle(args []string) error {
 		return fmt.Errorf("%w: %w", invalidArg, err)
 	}
 
-	param3 := this.Calc.Calculate(param1, param2)
-	_, err = fmt.Fprintf(this.Writer, "%d", param3)
+	param3 := this.calc.Calculate(param1, param2)
+	_, err = fmt.Fprintf(this.writer, "%d", param3)
 	if err != nil {
 		return err
 	}
